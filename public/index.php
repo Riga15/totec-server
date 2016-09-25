@@ -30,9 +30,31 @@ try {
      */
     $app->get('/',
         function () use ($app) {
-            $app->view->render('index', 'index');
+            $controller = 'index';
+            $action = 'index';
+            $app->view->render($controller, $action);
 
             return null; // 明示的にnullを返却するか、returnを書かない
+        }
+    );
+
+    /*
+     * ページ自体をメモリにキャッシュすることも可能
+     * ただしキャッシュが残っている間は、このハンドラーは静的なページとなる
+     */
+    $app->get('/cache',
+        function () use ($app) {
+            $cache = $app->view->getCache();
+            $controller = 'index';
+            $action = 'index';
+            $cacheKey = implode(':', [$controller, $action]);
+            if ($cache->exists($cacheKey)) {
+                echo $cache->get($cacheKey);
+                return;
+            }
+            $app->view
+                ->cache(['key' => $cacheKey, 'lifetime' => 86400])
+                ->render($controller, $action);
         }
     );
 
@@ -85,6 +107,15 @@ try {
     );
 
     /*
+     * 404のハンドリング
+     */
+    $app->notFound(
+        function () use ($app) {
+            throw new AppException('Not Found', 404);
+        }
+    );
+
+    /*
      * 定義済みエラーのハンドリング
      */
     $app->error(
@@ -111,7 +142,7 @@ try {
  */
 class AppException extends Exception
 {
-    public function __construct(String $message, Int $code, Exception $previous = null)
+    public function __construct(String $message, Int $code, Throwable $previous = null)
     {
         parent::__construct($message, $code,  $previous);
     }

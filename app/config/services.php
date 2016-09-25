@@ -1,5 +1,7 @@
 <?php
 
+use Apcu as cacheBackend;
+use Phalcon\Cache\Frontend\Output as cacheFrontend;
 use Phalcon\Flash\Direct as Flash;
 use Phalcon\Mvc\Model\Metadata\Memory as MetaDataAdapter;
 use Phalcon\Mvc\Url as UrlResolver;
@@ -53,6 +55,17 @@ $di->setShared('view', function () {
 
     return $view;
 });
+
+$di->set(
+    'viewCache',
+    function () {
+        // Cache data for one day by default
+        $frontCache = new cacheFrontend(['lifetime' => 86400]);
+        $cache = new cacheBackend($frontCache, ['prefix' => 'view:']);
+
+        return $cache;
+    }
+);
 
 /*
  * Database connection is created based in the parameters defined in the configuration file

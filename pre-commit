@@ -15,7 +15,7 @@ for FILE in `git diff-index --name-status $against -- | grep -E '^[AUM].*\.php|p
     # シンタックスのチェック
     if php -l $FILE; then
         # Symfony準拠でコード書き換え
-        php-cs-fixer fix $FILE --level=symfony --fixers=ordered_use,short_array_syntax,no_useless_else,concat_with_spaces,logical_not_operators_with_successor_space
+        php-cs-fixer fix $FILE --level=symfony --fixers=ordered_use,short_array_syntax,no_useless_else,concat_with_spaces,logical_not_operators_with_successor_space,-return
         git add $FILE
     else
         IS_ERROR=1

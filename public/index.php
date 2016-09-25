@@ -70,7 +70,6 @@ try {
             $response = new Response();
             $response->setContentType('application/json');
             $response->setContent(json_encode(['result' => true, 'data' => $val['data']]));
-
             return $response->send();
         }
     );
@@ -103,7 +102,6 @@ try {
 } catch (Throwable $e) {
     // 想定外エラーのハンドリング
     $e = new AppException($e->getMessage(), 500, $e);
-
     return $e->response()->send();
 }
 
@@ -134,7 +132,6 @@ class AppException extends Exception
         }
 
         $response = new Response(json_encode($body), $this->getCode());
-
         return $response->setContentType('application/json');
     }
 }

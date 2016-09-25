@@ -5,7 +5,7 @@ use \Phalcon\Config;
 defined('BASE_PATH') || define('BASE_PATH', getenv('BASE_PATH') ?: realpath(dirname(__FILE__) . '/../..'));
 defined('APP_PATH') || define('APP_PATH', BASE_PATH . '/app');
 
-return new Config([
+$config = new Config([
     'database' => [
         'adapter' => 'Mysql',
         'host' => '127.0.0.1',
@@ -28,3 +28,11 @@ return new Config([
         'error' => true,
     ],
 ]);
+
+$env = $_SERVER['APP_ENV'] ?? 'vagrant';
+$path = APP_PATH . '/config/' . $env . '/config.php';
+if (file_exists($path)) {
+    $envConfig = require $path;
+    $config->merge($envConfig);
+}
+return $config;
